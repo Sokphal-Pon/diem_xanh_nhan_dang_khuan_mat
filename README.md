@@ -10,7 +10,8 @@
   1. sinh viên phải nhìn Camera cho máy nhân dạng khuân mặt
   2. nhân dạng (đúng) hiển thị thông tin nguói đó để kiêm trả đúng hay chưa
   3. lưa thông tin, thới gian điểm danh và số lần đã diểm danh của ngưới đó vào Excel hoặc db.
-Yêu câu: sinh đăng ký phải có thông tin của minh và hình ảnh của sinh viên
+
+- Yêu câu: sinh đăng ký phải có thông tin của minh và hình ảnh của sinh viên
 
 CÔNG NGHỆ SỬ DỤNG:
   1. language: Python
