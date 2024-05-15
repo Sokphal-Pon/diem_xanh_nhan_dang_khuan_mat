@@ -2,7 +2,7 @@
 # Môn học: LẬP TRÌNH PYTHON
 # Project name: ĐIỂM DANH SINH-VIẺN TỰ ĐỘNG BẮNG NHÂN DẠNG
 
-📃 MÔ TẢ CỦA PROJECT:
+#📃 MÔ TẢ CỦA PROJECT:
 # Tạo UI (hoặc Web) mà có thể cho sinh tự điểm danh
 
 # Ý TƯƠNG CỦA USER INTERFACE:
