@@ -12,8 +12,9 @@
   3. lưa thông tin, thới gian điểm danh và số lần đã diểm danh của ngưới đó vào Excel hoặc db.
 
 CÔNG NGHỆ SỬ DỤNG:
-  1. language: Python 
-  2. OpenCV
-  3. nhân dạng modul: FaceRecognition (a Python library)
-  4. database: MSSQL 
-  5. UI library: Tkinter || PyQt 
+  1. language: Python
+  2. UI: Tkinter || PyQt 
+  3. OpenCV
+  4. nhân dạng modul: FaceRecognition (a Python library)
+  5. database: MSSQL 
+
