@@ -5,7 +5,7 @@ import os
 
 
 # Importing student images
-folderPath = 'students'
+folderPath = 'images'
 pathList = os.listdir(folderPath)
 print(pathList)
 imgList = []
@@ -21,7 +21,7 @@ for path in pathList:
 
     #print(path)
     #print(os.path.splitext(path)[0])
-print(studentID)
+    #print(studentID)
 
 
 
@@ -40,7 +40,7 @@ encodeListKnown = findEncodings(imgList)
 encodeListKnownWithIds = [encodeListKnown, studentID]
 print("Encoding Complete")
 
-file = open("trainFiles.p", 'wb')
+file = open("facial_decode.p", 'wb')
 pickle.dump(encodeListKnownWithIds, file)
 file.close()
 print("File Saved")
