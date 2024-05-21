@@ -5,7 +5,7 @@
   Tạo UI (hoặc Web) mà có thể cho sinh tự điểm danh
 
 # Ý TƯƠNG CỦA USER INTERFACE:
-  UI có thể hiên thị với Camera và thông tin theo sinh viên đã điểm 
+  UI có thể hiên thị với Camera và thông tin theo sinh viên đã điểm danh
 # VD:
   1. sinh viên phải nhìn Camera cho máy nhân dạng khuân mặt
   2. nhân dạng (đúng) hiển thị thông tin nguói đó để kiêm trả đúng hay chưa
