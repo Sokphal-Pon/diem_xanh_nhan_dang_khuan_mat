@@ -1,48 +1,88 @@
-import cv2
 import face_recognition
-import pickle
-import os
-from . import storage
+import cv2
+import numpy as np
+import pyodbc
+from datetime import datetime
 
+# Connect to SQL Server
+conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=YOURS\HELLOSQL;DATABASE=SDdatabase;UID=sa;PWD=hello@123')
+cursor = conn.cursor()
 
-# Importing student images
-folderPath = 'images'
-pathList = os.listdir(folderPath)
-print(pathList)
-imgList = []
-studentID = []
+# Load the known student faces and names from the database
+known_face_encodings = []
+known_face_names = []
 
-for path in pathList:
-    imgList.append(cv2.imread(os.path.join(folderPath, path)))
-    studentID.append(os.path.splitext(path)[0])
+# Assuming you have a table named 'sinh_vien_info' with columns 'student_id', 'first_name', and 'last_name'
+cursor.execute("SELECT id, first_name, last_name FROM sinh_vien_info")
+for row in cursor.fetchall():
+    student_id, first_name, last_name = row
+    image = face_recognition.load_image_file(f"images\CPC205013{student_id}.png")
+    face_encoding = face_recognition.face_encodings(image)[0]
+    known_face_encodings.append(face_encoding)
+    known_face_names.append(f"{first_name} {last_name}")
 
-    fileName = f'{folderPath}/{path}'
-    bucket = storage.bucket()
-    blob = bucket.blob(fileName)
-    blob.upload_from_filename(fileName)
+# Start the webcam
+video_capture = cv2.VideoCapture(0)
 
-    #print(path)
-    #print(os.path.splitext(path)[0])
-    #print(studentID)
+while True:
+    # Capture a frame from the webcam
+    ret, frame = video_capture.read()
 
+    # Resize the frame to improve performance
+    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
+    # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+    rgb_small_frame = small_frame[:, :, ::-1]
 
-def findEncodings(imagesList):
-    encodeList = []
-    for img in imagesList:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        encode = face_recognition.face_encodings(img)[0]
-        encodeList.append(encode)
+    # Find all the faces and face encodings in the current frame of video
+    face_locations = face_recognition.face_locations(rgb_small_frame)
+    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
-    return encodeList
+    # Loop through each face in the frame
+    for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+        # Scale the bounding box coordinates back up to the original image size
+        top *= 4
+        right *= 4
+        bottom *= 4
+        left *= 4
 
+        # See if the face is a match for the known faces
+        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+        name = "Unknown"
 
-print("Encoding Started ...")
-encodeListKnown = findEncodings(imgList)
-encodeListKnownWithIds = [encodeListKnown, studentID]
-print("Encoding Complete")
+        # If a match was found, use the name
+        if True in matches:
+            first_name, last_name = known_face_names[matches.index(True)].split()
+            name = f"{first_name} {last_name}"
 
-file = open("facial_decode.p", 'wb')
-pickle.dump(encodeListKnownWithIds, file)
-file.close()
-print("File Saved")
+            # Retrieve the student information from the database
+            cursor.execute("SELECT student_id, first_name, last_name, email, phone FROM sinh_vien_info WHERE first_name = ? AND last_name = ?", (first_name, last_name))
+            student_info = cursor.fetchone()
+            if student_info:
+                student_id, first_name, last_name, email, phone = student_info
+                print(f"Student: {first_name} {last_name}")
+                print(f"Student ID: {student_id}")
+                print(f"Email: {email}")
+                print(f"Phone: {phone}")
+
+            # Update the attendance in your database
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cursor.execute("INSERT INTO attendance (student_id, first_name, last_name, date, time) VALUES (?, ?, ?, ?, ?)",
+                          (student_id, first_name, last_name, current_time.split()[0], current_time.split()[1]))
+            conn.commit()
+
+        # Draw a rectangle around the face and the name
+        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+        cv2.putText(frame, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 1)
+
+    # Display the resulting image
+    cv2.imshow('Facial Recognition and Attendance', frame)
+
+    # Press 'q' to quit the application
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# Release the webcam and close the database connection
+video_capture.release()
+conn.close()
+cv2.destroyAllWindows()
