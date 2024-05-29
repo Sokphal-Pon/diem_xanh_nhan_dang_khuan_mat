@@ -85,7 +85,7 @@ while True:
     # get data from database
         if counter == 1:
             cursor.execute("SELECT * FROM sinh_vien_info")
-            studentInfo = cursor.execute(f'sinh_vien_info/{id}').get()
+            studentInfo = cursor.fetchone(f'sinh_vien_info/{id}').get()
             #print(studentInfo)
 
             # get image from storage firebase
@@ -101,7 +101,7 @@ while True:
 
             # Wait for time delay 60 seconds
             if secondsElapsed > 30:
-                ref = cursor.execute(f'sinh_vien_info/{id}')
+                ref = cursor.fetchone(f'sinh_vien_info/{id}')
                 # Update data to database
                 studentInfo['totalScan'] = str(int(studentInfo['totalScan']) + 1)
                 ref.child('totalScan').set(studentInfo['totalScan'])

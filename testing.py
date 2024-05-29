@@ -8,7 +8,7 @@ cursor = conn.cursor()
 cursor.execute("SELECT * FROM sinh_vien_info")
 
 # Fetch a single row
-student = cursor
+student = cursor.fetchone()
 print(student)
 
 
