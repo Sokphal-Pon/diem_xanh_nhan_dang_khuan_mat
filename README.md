@@ -15,8 +15,7 @@
 
 CÔNG NGHỆ SỬ DỤNG:
   1. language: Python
-  2. UI: Tkinter || PyQt 
-  3. OpenCV
-  4. nhân dạng modul: FaceRecognition (a Python library)
-  5. database: MSSQL 
+  2. OpenCV
+  3. nhân dạng modul: FaceRecognition (a Python library)
+  4. database: MSSQL 
 
